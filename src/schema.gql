@@ -1,0 +1,41 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Week {
+  id: String!
+  weekNo: Int!
+  startDate: DateTime!
+  endDate: DateTime!
+  timeTable: [String!]!
+  saturdayStatus: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  getAllWeeks: [Week!]!
+  getLatestWeek: Week!
+}
+
+type Mutation {
+  createWeekTimeTable(input: createWeekTimeTableDto!): Week!
+  editWeekTimeTable(input: editWeekTimeTableDto!): Week!
+  deleteWeekTimeTable(id: String!): String!
+}
+
+input createWeekTimeTableDto {
+  startDate: DateTime!
+  endDate: DateTime!
+  timeTable: [String!]!
+  saturdayStatus: Float!
+  weekNo: Float!
+}
+
+input editWeekTimeTableDto {
+  id: String!
+  timeTable: [String!]!
+}
