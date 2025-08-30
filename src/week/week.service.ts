@@ -9,6 +9,8 @@ import { Week } from 'src/entities/week.entity';
 import { Repository } from 'typeorm';
 import { createWeekTimeTableDto } from './dto/createWeekTimeTable.dto';
 import { editWeekTimeTableDto } from './dto/editWeekTimeTable.dto';
+import { waitForDebugger } from 'inspector';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class WeekService {
@@ -55,12 +57,20 @@ export class WeekService {
   }
 
   // check if it throws an error if the week doesn't exist -> the update function doesn't check wether the entity exists or not;
-
   async editWeekTimeTable(input: editWeekTimeTableDto) {
     try {
-      return await this.weekRepository.update(input.id, {
+      await this.weekRepository.update(new ObjectId(input.id), {
         timeTable: input.timeTable,
       });
+
+      const weeks = await this.weekRepository.find();
+      let week;
+      weeks.map((w) => {
+        if (String(w.id) === input.id) {
+          week = w;
+        }
+      });
+      return week;
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -68,12 +78,13 @@ export class WeekService {
 
   async deleteWeekTimeTable(id: string) {
     try {
-      const latestWeek = await this.weekRepository.find({
+      console.log(id);
+      const weeks = await this.weekRepository.find({
         order: { weekNo: 'DESC' },
-      })[0];
-      if (id === latestWeek.id) {
+      });
+      if (id === String(weeks[0].id)) {
         await this.weekRepository.delete(id);
-        return 'Deleted successfully';
+        return 'Deleted Successfully';
       } else {
         throw new BadRequestException('Only the lastest week can be deleted.');
       }

@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+#playground
+/playground
+
 # Logs
 logs
 *.log
