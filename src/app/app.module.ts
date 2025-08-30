@@ -17,6 +17,7 @@ import { WeekModule } from 'src/week/week.module';
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      playground: false,
     }),
     WeekModule,
   ],

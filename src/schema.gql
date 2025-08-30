@@ -9,6 +9,7 @@ type Week {
   endDate: DateTime!
   timeTable: [String!]!
   saturdayStatus: Float!
+  createdAt: DateTime
 }
 
 """

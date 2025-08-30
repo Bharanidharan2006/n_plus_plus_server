@@ -1,6 +1,18 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  Int,
+  ObjectType,
+  ResolveField,
+} from '@nestjs/graphql';
 import { SaturdayTT } from 'src/enums/saturday.tt';
-import { Entity, ObjectIdColumn, Column, ObjectId } from 'typeorm';
+import {
+  Entity,
+  ObjectIdColumn,
+  Column,
+  ObjectId,
+  CreateDateColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity()
@@ -32,4 +44,8 @@ export class Week {
     default: SaturdayTT.Leave,
   })
   saturdayStatus: SaturdayTT;
+
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  createdAt: Date;
 }

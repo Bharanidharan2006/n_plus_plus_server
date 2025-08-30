@@ -79,7 +79,6 @@ export class WeekService {
 
   async deleteWeekTimeTable(id: string) {
     try {
-      console.log(id);
       const weeks = await this.weekRepository.find({
         order: { weekNo: 'DESC' },
       });
