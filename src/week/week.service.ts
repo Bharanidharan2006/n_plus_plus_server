@@ -67,6 +67,7 @@ export class WeekService {
       let week;
       weeks.map((w) => {
         if (String(w.id) === input.id) {
+          // If you convert input.id to ObjectId it doesn't work
           week = w;
         }
       });
