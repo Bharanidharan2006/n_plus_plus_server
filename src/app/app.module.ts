@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+import { AuthModule } from 'src/auth/auth.module';
+import { User } from 'src/entities/user.entity';
 import { Week } from 'src/entities/week.entity';
 import { WeekModule } from 'src/week/week.module';
 
@@ -11,7 +13,7 @@ import { WeekModule } from 'src/week/week.module';
     TypeOrmModule.forRoot({
       type: 'mongodb',
       url: process.env.DATABASE_URL,
-      entities: [Week],
+      entities: [Week, User],
       synchronize: true,
     }),
     GraphQLModule.forRoot({
@@ -20,6 +22,7 @@ import { WeekModule } from 'src/week/week.module';
       playground: false,
     }),
     WeekModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
