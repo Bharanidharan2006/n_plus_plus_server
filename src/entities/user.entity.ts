@@ -53,6 +53,10 @@ export class User {
   })
   role: Role;
 
+  @Field(() => Int)
+  @Column()
+  refreshTokenVersion: number;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   @Field(() => GraphQLISODateTime, { nullable: true })
   createdAt: Date;

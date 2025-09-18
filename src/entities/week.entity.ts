@@ -3,7 +3,6 @@ import {
   GraphQLISODateTime,
   Int,
   ObjectType,
-  ResolveField,
 } from '@nestjs/graphql';
 import { SaturdayTT } from 'src/enums/saturday.tt';
 import {

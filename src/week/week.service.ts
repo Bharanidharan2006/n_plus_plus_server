@@ -9,7 +9,6 @@ import { Week } from 'src/entities/week.entity';
 import { Repository } from 'typeorm';
 import { createWeekTimeTableDto } from './dto/createWeekTimeTable.dto';
 import { editWeekTimeTableDto } from './dto/editWeekTimeTable.dto';
-import { waitForDebugger } from 'inspector';
 import { ObjectId } from 'mongodb';
 
 @Injectable()

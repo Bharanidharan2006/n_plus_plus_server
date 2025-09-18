@@ -1,5 +1,13 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  InputType,
+  Int,
+  ObjectType,
+} from '@nestjs/graphql';
 import { IsNotEmpty } from 'class-validator';
+import { Role } from 'src/enums/userrole';
+import { ObjectId } from 'typeorm';
 
 @InputType()
 export class registerUserInput {
@@ -24,4 +32,34 @@ export class registerUserInput {
   attendance: number[][];
 
   //For rep access directly edit it in the db
+}
+
+@ObjectType()
+export class registerUserOutput {
+  @Field(() => String)
+  id: string;
+
+  @Field()
+  email: string;
+
+  @Field()
+  rollNo: number;
+
+  @Field()
+  userName: string;
+
+  @Field()
+  currentSemester: number;
+
+  @Field(() => [[Int]])
+  attendance: number[][];
+
+  @Field(() => Int)
+  refreshTokenVersion: number;
+
+  @Field()
+  role: Role;
+
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  createdAt: Date;
 }

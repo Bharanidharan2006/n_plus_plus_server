@@ -7,6 +7,9 @@ import { AuthModule } from 'src/auth/auth.module';
 import { User } from 'src/entities/user.entity';
 import { Week } from 'src/entities/week.entity';
 import { WeekModule } from 'src/week/week.module';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [
