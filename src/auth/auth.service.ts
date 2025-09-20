@@ -15,7 +15,7 @@ import { FirstTimeLoginInput } from './dto/loginUser.dto';
 //Todo
 // [ ] - Add try catch block to user repository methods
 // [ ] - Also don't just use rollno to logout
-// [ ] - differentiate between firstTimeLogin and changePassword and try to merge them
+// [ ] - differentiate between firstTimeLogin and changePassword and try to merge them ( maybe have a firstTimeLogged in field in the database itself )
 
 @Injectable()
 export class AuthService {
@@ -128,32 +128,5 @@ export class AuthService {
     if (!isPasswordMatching) return null;
 
     return user;
-  }
-
-  async firstTimeLogin(input: FirstTimeLoginInput) {
-    const user = await this.userRepository.findOne({
-      where: { rollNo: input.rollno },
-    });
-
-    if (user) {
-      const isMasterPasswordMatched = await bcrypt.compare(
-        input.masterPassword,
-        user.masterPassword,
-      );
-      if (!isMasterPasswordMatched) {
-        throw new HttpException("Master password doesn't match", 401);
-      }
-      const hashedPassword = await bcrypt.hash(input.password, 12);
-      user.password = hashedPassword;
-      await this.userRepository.save(user);
-      const accessToken = await this.getAccessToken(user.id.toString());
-      const refreshToken = await this.getRefreshToken(
-        user.id.toString(),
-        user.refreshTokenVersion,
-      );
-      return { accessToken, refreshToken };
-    } else {
-      throw new HttpException("User with the given rollno doesn't exist", 404);
-    }
   }
 }

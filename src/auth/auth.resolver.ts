@@ -5,6 +5,7 @@ import { User } from 'src/entities/user.entity';
 import { FirstTimeLoginInput, LoginResponse } from './dto/loginUser.dto';
 import { HttpException } from '@nestjs/common';
 import { changePasswordInput } from './dto/changePassword.dto';
+import { log } from 'console';
 
 @Resolver()
 export class AuthResolver {
@@ -12,11 +13,6 @@ export class AuthResolver {
   @Mutation((returns) => registerUserOutput)
   registerUser(@Args('input') input: registerUserInput) {
     return this.authService.registerUser(input);
-  }
-
-  @Mutation((returns) => LoginResponse)
-  firstTimeLogin(@Args('input') input: FirstTimeLoginInput) {
-    return this.authService.firstTimeLogin(input);
   }
 
   @Mutation((returns) => LoginResponse)
@@ -35,6 +31,8 @@ export class AuthResolver {
       user.id.toString(),
       user.refreshTokenVersion,
     );
+    console.log('hgjhgh');
+
     return { accessToken, refreshToken };
   }
 

@@ -44,7 +44,6 @@ type Mutation {
   editWeekTimeTable(input: editWeekTimeTableDto!): Week!
   deleteWeekTimeTable(id: String!): String!
   registerUser(input: registerUserInput!): registerUserOutput!
-  firstTimeLogin(input: FirstTimeLoginInput!): LoginResponse!
   loginUser(rollno: Float!, password: String!): LoginResponse!
   refreshToken(refreshToken: String!): LoginResponse!
   logout(rollno: Float!): Boolean!
@@ -70,12 +69,6 @@ input registerUserInput {
   userName: String!
   currentSemester: Float!
   attendance: [[Int!]!]!
-}
-
-input FirstTimeLoginInput {
-  rollno: Float!
-  masterPassword: String!
-  password: String!
 }
 
 input changePasswordInput {
