@@ -5,12 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { ObjectId, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { registerUserInput } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/enums/userrole';
 import { JwtService } from '@nestjs/jwt';
 import { FirstTimeLoginInput } from './dto/loginUser.dto';
+import { ObjectId } from 'mongodb';
 
 //Todo
 // [ ] - Add try catch block to user repository methods
@@ -102,7 +103,6 @@ export class AuthService {
       currentSemester: input.currentSemester,
       rollNo: input.rollNo,
       password: undefined,
-      attendance: input.attendance,
       masterPassword: hashedMasterPassword,
       refreshTokenVersion: 0,
       role: Role.Student,
@@ -129,5 +129,16 @@ export class AuthService {
     if (!isPasswordMatching) return null;
 
     return user;
+  }
+
+  async getUser(id: string) {
+    try {
+      const userId = new ObjectId(id);
+      const user = await this.userRepository.findOneById(userId);
+
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, 404);
+    }
   }
 }

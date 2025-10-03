@@ -41,10 +41,6 @@ export class User {
   @Column()
   currentSemester: number;
 
-  @Field(() => [[Int]], { nullable: true })
-  @Column('simple-json', { nullable: true })
-  attendance: number[][];
-
   @Field(() => String, { nullable: false })
   @Column({
     type: 'enum',

@@ -1,8 +1,13 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { WeekService } from './week.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Week } from 'src/entities/week.entity';
 import { WeekResolver } from './week.resolver';
+import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/entities/user.entity';
+import { AttendanceService } from 'src/attendance/attendance.service';
+import { Attendance } from 'src/entities/attendance.entity';
+import { AttendanceModule } from 'src/attendance/attendance.module';
 
 // --- This module should only be accessed by reps -----
 // 1. Reps can create a timetable for each week by clicking create which gives the default timetable and they can edit any classed that have changed for that week. Then they can send "CreateWeek" mutation;
@@ -12,7 +17,7 @@ import { WeekResolver } from './week.resolver';
 // 5. deleteWeek -> it only allows the deletion of the latest week. ***Should find a way to add a undo option to this delete method***
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Week])],
-  providers: [WeekService, WeekResolver],
+  imports: [TypeOrmModule.forFeature([Week, User, Attendance])],
+  providers: [WeekService, WeekResolver, AuthService, AttendanceService],
 })
 export class WeekModule {}

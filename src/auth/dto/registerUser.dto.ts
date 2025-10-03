@@ -27,10 +27,6 @@ export class registerUserInput {
   @IsNotEmpty()
   currentSemester: number;
 
-  @Field(() => [[Int]])
-  @IsNotEmpty()
-  attendance: number[][];
-
   //For rep access directly edit it in the db
 }
 
@@ -50,9 +46,6 @@ export class registerUserOutput {
 
   @Field()
   currentSemester: number;
-
-  @Field(() => [[Int]])
-  attendance: number[][];
 
   @Field(() => Int)
   refreshTokenVersion: number;

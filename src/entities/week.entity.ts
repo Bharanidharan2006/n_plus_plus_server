@@ -1,9 +1,4 @@
-import {
-  Field,
-  GraphQLISODateTime,
-  Int,
-  ObjectType,
-} from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql';
 import { SaturdayTT } from 'src/enums/saturday.tt';
 import {
   Entity,

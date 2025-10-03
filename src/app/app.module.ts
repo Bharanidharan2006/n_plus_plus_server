@@ -8,6 +8,10 @@ import { User } from 'src/entities/user.entity';
 import { Week } from 'src/entities/week.entity';
 import { WeekModule } from 'src/week/week.module';
 import * as dotenv from 'dotenv';
+import { AttendanceModule } from 'src/attendance/attendance.module';
+import { Subject } from 'src/entities/subject.entity';
+import { Semester } from 'src/entities/semester.entity';
+import { Attendance } from 'src/entities/attendance.entity';
 
 dotenv.config();
 
@@ -16,7 +20,7 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'mongodb',
       url: process.env.DATABASE_URL,
-      entities: [Week, User],
+      entities: [Week, User, Subject, Semester, Attendance],
       synchronize: true,
     }),
     GraphQLModule.forRoot({
@@ -26,6 +30,7 @@ dotenv.config();
     }),
     WeekModule,
     AuthModule,
+    AttendanceModule,
   ],
   controllers: [],
   providers: [],

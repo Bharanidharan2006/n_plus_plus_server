@@ -1,11 +1,11 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { registerUserInput, registerUserOutput } from './dto/registerUser.dto';
 import { User } from 'src/entities/user.entity';
-import { FirstTimeLoginInput, LoginResponse } from './dto/loginUser.dto';
-import { HttpException } from '@nestjs/common';
+import { LoginResponse } from './dto/loginUser.dto';
+import { HttpException, UseGuards } from '@nestjs/common';
 import { changePasswordInput } from './dto/changePassword.dto';
-import { log } from 'console';
+import { GqlJwtAuthGuard } from './guard/jwt_token.guard';
 
 @Resolver()
 export class AuthResolver {
@@ -42,6 +42,7 @@ export class AuthResolver {
   }
 
   @Mutation((returns) => Boolean)
+  @UseGuards(GqlJwtAuthGuard)
   logout(@Args('rollno') rollno: number) {
     return this.authService.logout(rollno);
   }
@@ -53,5 +54,11 @@ export class AuthResolver {
       input.masterPassword,
       input.password,
     );
+  }
+
+  @Query(() => User)
+  @UseGuards(GqlJwtAuthGuard)
+  getUser(@Args('id') id: string) {
+    return this.authService.getUser(id);
   }
 }
