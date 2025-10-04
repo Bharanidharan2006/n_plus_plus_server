@@ -2,7 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
-ObjectType();
+@ObjectType()
 export class AttendanceRecord {
   @Field()
   @Column()

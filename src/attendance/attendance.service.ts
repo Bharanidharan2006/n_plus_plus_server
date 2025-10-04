@@ -7,6 +7,8 @@ import { SaturdayTT } from 'src/enums/saturday.tt';
 import { ObjectId } from 'mongodb';
 import { WeekService } from 'src/week/week.service';
 import { UpdateAttendanceDto } from './dto/updateAttendance.dto';
+import { Subject } from 'src/entities/subject.entity';
+import { GetAttendancePercentageOutput } from './dto/attendancePercentage.dto';
 
 const CURRENT_SEM = '68dccf5c38107cbf5d0ecaf9';
 
@@ -15,6 +17,8 @@ export class AttendanceService {
   constructor(
     @InjectRepository(Attendance)
     private attendanceRepository: Repository<Attendance>,
+    @InjectRepository(Subject)
+    private subjectRepository: Repository<Subject>,
     @Inject(forwardRef(() => WeekService))
     private weekService: WeekService,
   ) {}
@@ -161,5 +165,52 @@ export class AttendanceService {
       }
     }
     return true;
+  }
+
+  async getAttendancePercentage(rollNo) {
+    const attendanceRecords = await this.attendanceRepository.find({
+      where: { studentRollNo: rollNo, semesterId: new ObjectId(CURRENT_SEM) },
+    });
+    let attendanceRecordsWithSubjectDetails: GetAttendancePercentageOutput[] =
+      [];
+
+    for (const record of attendanceRecords) {
+      const subjectDetails = await this.subjectRepository.findOneById(
+        record.subjectId,
+      );
+
+      if (subjectDetails) {
+        console.log(subjectDetails);
+        const recordWithSubjectDetails = {
+          attendance: {
+            ...record,
+            attendanceRecords: record.attendanceRecords.map((r) => r),
+          },
+          subjectDetails: subjectDetails,
+        };
+        attendanceRecordsWithSubjectDetails.push(recordWithSubjectDetails);
+      } else {
+        throw new HttpException('Subject Not Found.', 404);
+      }
+    }
+
+    return attendanceRecordsWithSubjectDetails;
+  }
+
+  async getSubjectDetails() {
+    const subjects = await this.subjectRepository.find({
+      where: { semesterId: new ObjectId(CURRENT_SEM) },
+    });
+    return subjects;
+  }
+  async getAttendanceRecord(rollNo: number, subjectId: string) {
+    const attendanceRecord = await this.attendanceRepository.findOne({
+      where: {
+        studentRollNo: rollNo,
+        subjectId: new ObjectId(subjectId),
+        semesterId: new ObjectId(CURRENT_SEM),
+      },
+    });
+    return attendanceRecord;
   }
 }

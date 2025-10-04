@@ -46,11 +46,48 @@ type Week {
   createdAt: DateTime
 }
 
+type AttendanceRecord {
+  date: DateTime!
+  periods: [Int!]!
+  monthNumber: Float!
+  isUpdated: Boolean!
+  attended: [Boolean!]!
+}
+
+type Attendance {
+  id: String!
+  semesterId: String!
+  studentRollNo: Int!
+  subjectId: String!
+  totalContactHours: Float!
+  attendedContactHours: Float!
+  attendancePercentage: Float!
+  attendanceRecords: [AttendanceRecord!]!
+}
+
+type Subject {
+  id: String!
+  semesterId: String!
+  subjectCode: String!
+  subjectTitle: String!
+  credits: Float!
+  contactHoursPerWeek: Float!
+  teacherName: String!
+}
+
+type GetAttendancePercentageOutput {
+  attendance: Attendance!
+  subjectDetails: Subject!
+}
+
 type Query {
   methoddd: Int!
   getAllWeeks: [Week!]!
   getLatestWeek: Week!
-  getUser(id: String!): User!
+  getUser(token: String!): User!
+  getSubjectDetails: [Subject!]!
+  getAttendanceRecord(rollNo: Float!, subjectId: String!): Attendance!
+  getAttendancePercentage(rollNo: Float!): [GetAttendancePercentageOutput!]!
 }
 
 type Mutation {

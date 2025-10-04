@@ -58,7 +58,7 @@ export class AuthResolver {
 
   @Query(() => User)
   @UseGuards(GqlJwtAuthGuard)
-  getUser(@Args('id') id: string) {
-    return this.authService.getUser(id);
+  getUser(@Args('token') token: string) {
+    return this.authService.getUser(token);
   }
 }

@@ -7,7 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/entities/user.entity';
 import { AttendanceService } from 'src/attendance/attendance.service';
 import { Attendance } from 'src/entities/attendance.entity';
-import { AttendanceModule } from 'src/attendance/attendance.module';
+import { Subject } from 'src/entities/subject.entity';
 
 // --- This module should only be accessed by reps -----
 // 1. Reps can create a timetable for each week by clicking create which gives the default timetable and they can edit any classed that have changed for that week. Then they can send "CreateWeek" mutation;
@@ -17,7 +17,7 @@ import { AttendanceModule } from 'src/attendance/attendance.module';
 // 5. deleteWeek -> it only allows the deletion of the latest week. ***Should find a way to add a undo option to this delete method***
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Week, User, Attendance])],
+  imports: [TypeOrmModule.forFeature([Week, User, Attendance, Subject])],
   providers: [WeekService, WeekResolver, AuthService, AttendanceService],
 })
 export class WeekModule {}

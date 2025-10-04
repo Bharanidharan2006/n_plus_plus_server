@@ -41,6 +41,11 @@ export class AuthService {
     return refresh_token;
   }
 
+  async getUserIdFromToken(token: string) {
+    const payload = await this.jwtService.verifyAsync(token);
+    return payload.sub;
+  }
+
   async refreshTokens(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken);
@@ -131,11 +136,10 @@ export class AuthService {
     return user;
   }
 
-  async getUser(id: string) {
+  async getUser(token: string) {
     try {
-      const userId = new ObjectId(id);
+      const userId = new ObjectId(await this.getUserIdFromToken(token));
       const user = await this.userRepository.findOneById(userId);
-
       return user;
     } catch (error) {
       throw new HttpException(error.message, 404);

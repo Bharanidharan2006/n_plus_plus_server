@@ -9,6 +9,10 @@ export class Subject {
   @ObjectIdColumn()
   id: ObjectId;
 
+  @Field(() => String)
+  @Column()
+  semesterId: ObjectId;
+
   @Field()
   @Column()
   subjectCode: string;
