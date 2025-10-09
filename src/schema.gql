@@ -112,6 +112,7 @@ input createWeekTimeTableDto {
 
 input editWeekTimeTableDto {
   id: String!
+  saturdayStatus: Float!
   timeTable: [String!]!
 }
 

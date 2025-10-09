@@ -30,8 +30,8 @@ export class RepAccessGuard implements CanActivate {
     }
 
     const payload = this.jwtService.verify(token);
-    const user = await this.authService.getUser(payload.sub);
-    if (!user || user.role === Role.Student) {
+    const user = await this.authService.getUserById(payload.sub);
+    if (user && user.role === Role.Representative) {
       return true;
     } else {
       return false;

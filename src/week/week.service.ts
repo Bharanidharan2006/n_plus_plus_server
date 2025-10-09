@@ -88,6 +88,7 @@ export class WeekService {
     try {
       await this.weekRepository.update(new ObjectId(input.id), {
         timeTable: input.timeTable,
+        saturdayStatus: input.saturdayStatus,
       });
 
       const weeks = await this.weekRepository.find();

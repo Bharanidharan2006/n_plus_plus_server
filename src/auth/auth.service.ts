@@ -136,6 +136,16 @@ export class AuthService {
     return user;
   }
 
+  async getUserById(id: string) {
+    try {
+      const userId = new ObjectId(id);
+      const user = await this.userRepository.findOneById(userId);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, 404);
+    }
+  }
+
   async getUser(token: string) {
     try {
       const userId = new ObjectId(await this.getUserIdFromToken(token));
