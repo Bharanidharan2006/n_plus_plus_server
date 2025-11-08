@@ -12,6 +12,7 @@ import { AttendanceModule } from 'src/attendance/attendance.module';
 import { Subject } from 'src/entities/subject.entity';
 import { Semester } from 'src/entities/semester.entity';
 import { Attendance } from 'src/entities/attendance.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ dotenv.config();
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: false,
     }),
+    ScheduleModule.forRoot(),
     WeekModule,
     AuthModule,
     AttendanceModule,
