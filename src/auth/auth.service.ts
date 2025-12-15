@@ -87,7 +87,7 @@ export class AuthService {
     const isValid = await bcrypt.compare(masterPass, user.masterPassword);
     if (!isValid) throw new UnauthorizedException('Invalid credentials');
 
-    user.password = await bcrypt.hash(newPass, 10);
+    user.password = await bcrypt.hash(newPass, 12);
     user.refreshTokenVersion += 1; // revoke all refresh tokens
     await this.userRepository.save(user);
 
@@ -125,12 +125,10 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { rollNo: rollno },
     });
-    //console.log(user);
 
     if (!user) return null;
     if (!user.password) return null;
     const isPasswordMatching = await bcrypt.compare(password, user.password);
-
     if (!isPasswordMatching) return null;
 
     return user;

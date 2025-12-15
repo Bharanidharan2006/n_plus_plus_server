@@ -27,7 +27,7 @@ dotenv.config();
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      playground: false,
+      playground: true,
     }),
     ScheduleModule.forRoot(),
     WeekModule,
