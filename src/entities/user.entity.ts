@@ -24,7 +24,7 @@ export class User {
   // This attribute stores the dates for which the student has not updated the attendance
   @Field(() => [Date])
   @Column({ default: [] })
-  pending_dates: Date[];
+  pendingDates: Date[];
 
   @Field()
   @Column()

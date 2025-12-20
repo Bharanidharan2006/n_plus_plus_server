@@ -31,7 +31,6 @@ export class AuthResolver {
       user.id.toString(),
       user.refreshTokenVersion,
     );
-    console.log('hgjhgh');
 
     return { accessToken, refreshToken };
   }

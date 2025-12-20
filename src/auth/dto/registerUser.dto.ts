@@ -53,6 +53,9 @@ export class registerUserOutput {
   @Field()
   role: Role;
 
+  @Field(() => [Date])
+  pendingDates: Date[];
+
   @Field(() => GraphQLISODateTime, { nullable: true })
   createdAt: Date;
 }

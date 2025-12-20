@@ -5,6 +5,7 @@
 type User {
   id: String!
   email: String!
+  pendingDates: [DateTime!]!
   rollNo: Float!
   masterPassword: String!
   password: String
@@ -28,6 +29,7 @@ type registerUserOutput {
   currentSemester: Float!
   refreshTokenVersion: Int!
   role: String!
+  pendingDates: [DateTime!]!
   createdAt: DateTime
 }
 
@@ -88,6 +90,7 @@ type Query {
   getSubjectDetails: [Subject!]!
   getAttendanceRecord(rollNo: Float!, subjectId: String!): Attendance!
   getAttendancePercentage(rollNo: Float!): [GetAttendancePercentageOutput!]!
+  getScheduleByDate(date: DateTime!): [String!]!
 }
 
 type Mutation {
@@ -100,6 +103,7 @@ type Mutation {
   logout(rollno: Float!): Boolean!
   changePassword(input: changePasswordInput!): Boolean!
   updateAttendance(input: UpdateAttendanceDto!): Boolean!
+  updateDailyAttendance(input: UpdateDailyAttendanceDto!): Boolean!
 }
 
 input createWeekTimeTableDto {
@@ -139,4 +143,10 @@ input UpdateAttendanceDto {
 input IndividualRecord {
   rollNo: Int!
   attended: [Boolean!]!
+}
+
+input UpdateDailyAttendanceDto {
+  date: DateTime!
+  rollno: Float!
+  attendanceData: [Boolean!]!
 }

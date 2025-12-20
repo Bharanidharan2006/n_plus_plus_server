@@ -9,6 +9,8 @@ import { WeekService } from 'src/week/week.service';
 import { UpdateAttendanceDto } from './dto/updateAttendance.dto';
 import { Subject } from 'src/entities/subject.entity';
 import { GetAttendancePercentageOutput } from './dto/attendancePercentage.dto';
+import { UpdateDailyAttendanceDto } from './dto/updateDailyAttendance.dto';
+import { User } from 'src/entities/user.entity';
 
 const CURRENT_SEM = '68dccf5c38107cbf5d0ecaf9';
 
@@ -19,6 +21,8 @@ export class AttendanceService {
     private attendanceRepository: Repository<Attendance>,
     @InjectRepository(Subject)
     private subjectRepository: Repository<Subject>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @Inject(forwardRef(() => WeekService))
     private weekService: WeekService,
   ) {}
@@ -35,6 +39,8 @@ export class AttendanceService {
     { subjectCode: 'CS23S01', id: '68df5bd638107cbf5d0ecb2f' },
   ];
 
+  subjectMap = new Map(this.subjects.map((sub) => [sub.subjectCode, sub.id]));
+
   isSameDate(d1, d2) {
     return (
       d1.getFullYear() === d2.getFullYear() &&
@@ -43,21 +49,37 @@ export class AttendanceService {
     );
   }
 
-  @Cron('0 0 * * 1-6', { timeZone: 'Asia/Kolkata' })
-  async updateAttendanceCron(isManualUpdate: boolean = false) {
-    const subjectMap = new Map(
-      this.subjects.map((sub) => [sub.subjectCode, sub.id]),
-    );
-    const week = await this.weekService.getLatestWeek();
-    const today = new Date();
-    const dayNumber = today.getDay();
+  // Returns the schedule of a day given a date.
+  async getScheduleByDate(date: Date): Promise<string[]> {
+    let week;
+    if (date == new Date()) {
+      week = await this.weekService.getLatestWeek();
+    } else {
+      const allWeeks = await this.weekService.getAllWeeks();
+      for (const t_week of allWeeks) {
+        // date > week.startDate -> cause the first day of the week is sunday so don't need to check with an date >= week.startDate
+        if (date > t_week.startDate && date <= t_week.endDate) {
+          week = t_week;
+        }
+      }
+    }
 
-    if (dayNumber === 0) return;
-    if (dayNumber === 6 && week.saturdayStatus === SaturdayTT.Leave) return;
+    const dayNumber = date.getDay();
+
+    if (dayNumber === 0) return [];
+    if (dayNumber === 6 && week.saturdayStatus === SaturdayTT.Leave) return [];
 
     const startIndex = (dayNumber - 1) * 8;
     const endIndex = dayNumber * 8;
-    const todaySchedule = week.timeTable.slice(startIndex, endIndex);
+    const schedule = week.timeTable.slice(startIndex, endIndex);
+
+    return schedule;
+  }
+
+  //@Cron('0 0 * * 1-6', { timeZone: 'Asia/Kolkata' })
+  async updateAttendanceCron(isManualUpdate: boolean = false) {
+    const today = new Date();
+    const todaySchedule = await this.getScheduleByDate(today);
 
     const subjectToPeriod: Map<string, number[]> = new Map();
     todaySchedule.forEach((subjectCode, idx) => {
@@ -68,7 +90,7 @@ export class AttendanceService {
     });
 
     for (const [subjectCode, periods] of subjectToPeriod.entries()) {
-      const subjectId = subjectMap.get(subjectCode);
+      const subjectId = this.subjectMap.get(subjectCode);
       if (!subjectId) continue;
 
       const attended = new Array(periods.length).fill(false);
@@ -82,7 +104,7 @@ export class AttendanceService {
       for (const student of students) {
         const attendanceRecord = {
           isUpdated: false,
-          date: new Date(),
+          date: today,
           attended,
           periods,
           monthNumber: today.getMonth(),
@@ -180,7 +202,6 @@ export class AttendanceService {
       );
 
       if (subjectDetails) {
-        console.log(subjectDetails);
         const recordWithSubjectDetails = {
           attendance: {
             ...record,
@@ -212,5 +233,156 @@ export class AttendanceService {
       },
     });
     return attendanceRecord;
+  }
+
+  // Given a student's rollno and daily attendance data, this function updates function for each subject.
+  async updateDailyAttendance(input: UpdateDailyAttendanceDto) {
+    const schedule = await this.getScheduleByDate(input.date);
+
+    console.log(input.attendanceData);
+
+    if (!schedule || schedule.length == 0) {
+      throw new HttpException('No schedule found for the given day.', 404);
+    }
+
+    // Note: Attendance data is updated period by period. So if you have a block hour like first two hours maths, the 'isUpdated' field will be set to true when the first period's attendance is updated. So if a failure happens after updating the first hour attendance, it may be lead to inaccurate data (atomicity problem)
+
+    for (let i = 0; i < schedule.length; i++) {
+      let subjectCode = schedule[i];
+      if (subjectCode != '') {
+        const subjectId = this.subjectMap.get(subjectCode);
+        const attendanceRecord = await this.attendanceRepository.findOne({
+          where: {
+            studentRollNo: input.rollno,
+            subjectId: new ObjectId(subjectId),
+            semesterId: new ObjectId(CURRENT_SEM),
+          },
+        });
+
+        if (!attendanceRecord)
+          throw new HttpException(
+            'No attendance record found for given rollno, subject and semester',
+            404,
+          );
+
+        const recordIndex = attendanceRecord?.attendanceRecords.findIndex((r) =>
+          this.isSameDate(input.date, r.date),
+        );
+
+        if (recordIndex >= 0) {
+          try {
+            if (
+              !attendanceRecord.attendanceRecords[recordIndex].periods.includes(
+                i + 1,
+              )
+            ) {
+              throw new HttpException('Period mismatch', 500);
+            }
+            const periodIndex = attendanceRecord.attendanceRecords[
+              recordIndex
+            ].periods.findIndex((v) => v === i + 1);
+            attendanceRecord.attendanceRecords[recordIndex].attended[
+              periodIndex
+            ] = input.attendanceData[i];
+            console.log(
+              attendanceRecord.attendanceRecords[recordIndex].attended[
+                periodIndex
+              ],
+              input.attendanceData[i],
+              periodIndex,
+            );
+
+            attendanceRecord.attendanceRecords[recordIndex].isUpdated = true;
+
+            await this.attendanceRepository.save(attendanceRecord);
+          } catch (error) {
+            throw new HttpException(
+              'Unable to save attendance record due to a database error.',
+              500,
+            );
+          }
+        }
+      }
+    }
+
+    const user = await this.userRepository.findOne({
+      where: {
+        rollNo: input.rollno,
+      },
+    });
+    if (user) {
+      user.pendingDates = user.pendingDates.filter(
+        (d) => !this.isSameDate(d, input.date),
+      );
+      await this.userRepository.save(user);
+    } else {
+      throw new HttpException("Internal Server Error: User didn't exist", 500);
+    }
+
+    let subjectCodesWithoutDuplicates = [...new Set(schedule)];
+    subjectCodesWithoutDuplicates = subjectCodesWithoutDuplicates.filter(
+      (s) => s !== '',
+    );
+
+    for (const subjectCode of subjectCodesWithoutDuplicates) {
+      const subjectId = this.subjectMap.get(subjectCode);
+      const attendanceRecord = await this.attendanceRepository.findOne({
+        where: {
+          studentRollNo: input.rollno,
+          subjectId: new ObjectId(subjectId),
+          semesterId: new ObjectId(CURRENT_SEM),
+        },
+      });
+
+      if (!attendanceRecord)
+        throw new HttpException(
+          'No attendance record found for given rollno, subject and semester',
+          404,
+        );
+
+      const recordIndex = attendanceRecord?.attendanceRecords.findIndex((r) =>
+        this.isSameDate(input.date, r.date),
+      );
+      //Counting the no of true's to get the attended hours
+      const attendedHours =
+        attendanceRecord.attendanceRecords[recordIndex].attended.filter(
+          Boolean,
+        ).length;
+      attendanceRecord.attendedContactHours += attendedHours;
+      attendanceRecord.attendancePercentage =
+        (attendanceRecord.attendedContactHours /
+          attendanceRecord.totalContactHours) *
+        100;
+    }
+
+    return true;
+  }
+
+  async getPendingAttendanceUpdates(rollNo: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        rollNo: rollNo,
+      },
+    });
+
+    if (!user) throw new HttpException('Invalid rollno provided', 500);
+
+    // Bad - Defining a type inside a function
+    type PendingAttendanceOutputPartial = {
+      date: Date;
+      schedule: string[];
+    };
+
+    let pendingAttendanceOutput: PendingAttendanceOutputPartial[] = [];
+
+    for (const pDate of user.pendingDates) {
+      const partialPendingData = {
+        date: pDate,
+        schedule: await this.getScheduleByDate(pDate),
+      };
+      pendingAttendanceOutput.push(partialPendingData);
+    }
+
+    return pendingAttendanceOutput;
   }
 }

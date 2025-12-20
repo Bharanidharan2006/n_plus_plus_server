@@ -1,15 +1,16 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-class PendingAttendanceOutputPartial {
+export class PendingAttendanceOutputPartial {
   @Field()
   date: Date;
 
-  @Field()
+  @Field(() => [String])
   schedule: string[];
 }
 
 @ObjectType()
 export class PendingAttendanceOutput {
+  @Field(() => [PendingAttendanceOutputPartial])
   pendingUpdates: PendingAttendanceOutputPartial[];
 }

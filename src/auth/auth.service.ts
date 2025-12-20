@@ -111,6 +111,7 @@ export class AuthService {
       masterPassword: hashedMasterPassword,
       refreshTokenVersion: 0,
       role: Role.Student,
+      pendingDates: [],
     };
 
     const savedUser = (await this.userRepository.save(newUser)) as User;

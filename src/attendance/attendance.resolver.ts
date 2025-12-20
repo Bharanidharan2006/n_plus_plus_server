@@ -6,9 +6,11 @@ import { UpdateAttendanceDto } from './dto/updateAttendance.dto';
 import { GetAttendancePercentageOutput } from './dto/attendancePercentage.dto';
 import { Subject } from 'src/entities/subject.entity';
 import { Attendance } from 'src/entities/attendance.entity';
+import { UpdateDailyAttendanceDto } from './dto/updateDailyAttendance.dto';
+import { PendingAttendanceOutput } from './dto/pendingAttendanceOutput.dto';
 
 @Resolver()
-@UseGuards(GqlJwtAuthGuard)
+//@UseGuards(GqlJwtAuthGuard)
 export class AttendanceResolver {
   constructor(private attendanceService: AttendanceService) {}
 
@@ -34,4 +36,24 @@ export class AttendanceResolver {
   async updateAttendance(@Args('input') input: UpdateAttendanceDto) {
     return await this.attendanceService.updateAttendance(input);
   }
+
+  // TODO
+  // [ ] -> Add Basic guards
+
+  @Mutation(() => Boolean)
+  async updateDailyAttendance(@Args('input') input: UpdateDailyAttendanceDto) {
+    return await this.attendanceService.updateDailyAttendance(input);
+  }
+
+  // Returns the schedule for the dates pending the attendance update.
+  @Query(() => [String])
+  async getScheduleByDate(@Args('date') date: Date) {
+    return await this.attendanceService.getScheduleByDate(date);
+  }
+
+  // @Query(() => String)
+  // async updateAttendanceForAll() {
+  //   await this.attendanceService.updateAttendanceCron();
+  //   return 'Done';
+  // }
 }
