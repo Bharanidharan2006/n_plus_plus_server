@@ -17,6 +17,10 @@ export class registerUserInput {
 
   @Field()
   @IsNotEmpty()
+  phoneNo: string;
+
+  @Field()
+  @IsNotEmpty()
   rollNo: number;
 
   @Field()
@@ -55,6 +59,12 @@ export class registerUserOutput {
 
   @Field(() => [Date])
   pendingDates: Date[];
+
+  @Field(() => String)
+  phoneNo: string;
+
+  @Field(() => String)
+  notificationToken: string;
 
   @Field(() => GraphQLISODateTime, { nullable: true })
   createdAt: Date;

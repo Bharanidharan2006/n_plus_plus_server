@@ -58,6 +58,14 @@ export class User {
   @Column()
   refreshTokenVersion: number;
 
+  @Field(() => String)
+  @Column({ default: null })
+  notificationToken: string;
+
+  @Field(() => String)
+  @Column({ nullable: false })
+  phoneNo: string;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   @Field(() => GraphQLISODateTime, { nullable: true })
   createdAt: Date;

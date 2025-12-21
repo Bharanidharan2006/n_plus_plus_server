@@ -10,7 +10,6 @@ import { registerUserInput } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/enums/userrole';
 import { JwtService } from '@nestjs/jwt';
-import { FirstTimeLoginInput } from './dto/loginUser.dto';
 import { ObjectId } from 'mongodb';
 
 //Todo
@@ -110,6 +109,7 @@ export class AuthService {
       password: undefined,
       masterPassword: hashedMasterPassword,
       refreshTokenVersion: 0,
+      phoneNo: input.phoneNo,
       role: Role.Student,
       pendingDates: [],
     };

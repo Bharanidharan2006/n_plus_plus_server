@@ -10,7 +10,7 @@ import { UpdateDailyAttendanceDto } from './dto/updateDailyAttendance.dto';
 import { PendingAttendanceOutput } from './dto/pendingAttendanceOutput.dto';
 
 @Resolver()
-//@UseGuards(GqlJwtAuthGuard)
+@UseGuards(GqlJwtAuthGuard)
 export class AttendanceResolver {
   constructor(private attendanceService: AttendanceService) {}
 

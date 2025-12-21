@@ -13,6 +13,8 @@ type User {
   currentSemester: Int!
   role: String!
   refreshTokenVersion: Int!
+  notificationToken: String!
+  phoneNo: String!
   createdAt: DateTime
 }
 
@@ -30,6 +32,8 @@ type registerUserOutput {
   refreshTokenVersion: Int!
   role: String!
   pendingDates: [DateTime!]!
+  phoneNo: String!
+  notificationToken: String!
   createdAt: DateTime
 }
 
@@ -91,6 +95,7 @@ type Query {
   getAttendanceRecord(rollNo: Float!, subjectId: String!): Attendance!
   getAttendancePercentage(rollNo: Float!): [GetAttendancePercentageOutput!]!
   getScheduleByDate(date: DateTime!): [String!]!
+  SendMarkAttendanceNotification: String!
 }
 
 type Mutation {
@@ -104,6 +109,7 @@ type Mutation {
   changePassword(input: changePasswordInput!): Boolean!
   updateAttendance(input: UpdateAttendanceDto!): Boolean!
   updateDailyAttendance(input: UpdateDailyAttendanceDto!): Boolean!
+  updatePushNotificationToken(notificationToken: String!, rollNo: Float!): Boolean!
 }
 
 input createWeekTimeTableDto {
@@ -122,6 +128,7 @@ input editWeekTimeTableDto {
 
 input registerUserInput {
   email: String!
+  phoneNo: String!
   rollNo: Float!
   userName: String!
   currentSemester: Float!

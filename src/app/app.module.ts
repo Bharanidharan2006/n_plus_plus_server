@@ -13,6 +13,8 @@ import { Subject } from 'src/entities/subject.entity';
 import { Semester } from 'src/entities/semester.entity';
 import { Attendance } from 'src/entities/attendance.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationModule } from 'src/notification/notification.module';
+import { NotificationAction } from 'src/entities/notification_action.entity';
 
 dotenv.config();
 
@@ -21,7 +23,7 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'mongodb',
       url: process.env.DATABASE_URL,
-      entities: [Week, User, Subject, Semester, Attendance],
+      entities: [Week, User, Subject, Semester, Attendance, NotificationAction],
       synchronize: true,
     }),
     GraphQLModule.forRoot({
@@ -33,6 +35,7 @@ dotenv.config();
     WeekModule,
     AuthModule,
     AttendanceModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [],
