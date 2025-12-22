@@ -65,7 +65,7 @@ export class NotificationService {
           title: 'Mark your attendance',
           body: 'Did you attend all the classes today?',
           sound: 'default',
-          categoryId: 'attendance_actions',
+          categoryId: 'attendanceActions',
           data: {
             actionId: savedAction.id,
           },
