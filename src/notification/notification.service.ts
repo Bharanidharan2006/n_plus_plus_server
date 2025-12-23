@@ -7,12 +7,12 @@ import { Repository } from 'typeorm';
 
 type NotificationPayload = {
   to: string;
-  title: string;
-  body: string;
-  sound: string;
-  categoryId: string;
+  priority: string;
   data: {
     actionId: ObjectId;
+    title: string;
+    categoryId: string;
+    body: string;
   };
 };
 
@@ -21,7 +21,7 @@ export class NotificationService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(User)
+    @InjectRepository(NotificationAction)
     private notificationActionRepository: Repository<NotificationAction>,
   ) {}
 
@@ -62,12 +62,12 @@ export class NotificationService {
         }
         const notificationPayload = {
           to: user.notificationToken,
-          title: 'Mark your attendance',
-          body: 'Did you attend all the classes today?',
-          sound: 'default',
-          categoryId: 'attendanceActions',
+          priority: 'high',
           data: {
             actionId: savedAction.id,
+            title: 'Mark your attendance',
+            categoryId: 'attendance_actions',
+            body: 'Did you attend all the classes today?',
           },
         };
         payload.push(notificationPayload);
