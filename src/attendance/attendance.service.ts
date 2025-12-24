@@ -253,7 +253,7 @@ export class AttendanceService {
         const subjectId = this.subjectMap.get(subjectCode);
         const attendanceRecord = await this.attendanceRepository.findOne({
           where: {
-            studentRollNo: input.rollno,
+            studentRollNo: input.rollNo,
             subjectId: new ObjectId(subjectId),
             semesterId: new ObjectId(CURRENT_SEM),
           },
@@ -307,7 +307,7 @@ export class AttendanceService {
 
     const user = await this.userRepository.findOne({
       where: {
-        rollNo: input.rollno,
+        rollNo: input.rollNo,
       },
     });
     if (user) {
@@ -328,7 +328,7 @@ export class AttendanceService {
       const subjectId = this.subjectMap.get(subjectCode);
       const attendanceRecord = await this.attendanceRepository.findOne({
         where: {
-          studentRollNo: input.rollno,
+          studentRollNo: input.rollNo,
           subjectId: new ObjectId(subjectId),
           semesterId: new ObjectId(CURRENT_SEM),
         },

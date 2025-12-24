@@ -110,6 +110,7 @@ type Mutation {
   updateAttendance(input: UpdateAttendanceDto!): Boolean!
   updateDailyAttendance(input: UpdateDailyAttendanceDto!): Boolean!
   updatePushNotificationToken(notificationToken: String!, rollNo: Float!): Boolean!
+  markAttendanceFromNotification(actionId: String!): Boolean!
 }
 
 input createWeekTimeTableDto {
@@ -154,6 +155,6 @@ input IndividualRecord {
 
 input UpdateDailyAttendanceDto {
   date: DateTime!
-  rollno: Float!
+  rollNo: Float!
   attendanceData: [Boolean!]!
 }

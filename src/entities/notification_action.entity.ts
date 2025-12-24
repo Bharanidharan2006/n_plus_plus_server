@@ -14,11 +14,11 @@ export class NotificationAction {
 
   @Field(() => Boolean)
   @Column({ default: false })
-  isUpdated: false;
+  isUpdated: boolean;
 
-  //   @Field(() => String)
-  //   @Column({ nullable: false })
-  //   actionId: string;
+  @Field()
+  @Column({ nullable: false })
+  date: Date;
 
   @Field(() => Int)
   @Column({ nullable: false })

@@ -19,6 +19,11 @@ export class NotificationResolver {
     );
   }
 
+  @Mutation(() => Boolean)
+  async markAttendanceFromNotification(@Args('actionId') actionId: string) {
+    return await this.markAttendanceFromNotification(actionId);
+  }
+
   @Query(() => String)
   SendMarkAttendanceNotification() {
     this.notificationService.sendMarkAttendanceNotification();

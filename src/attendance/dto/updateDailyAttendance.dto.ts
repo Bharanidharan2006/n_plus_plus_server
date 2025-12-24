@@ -9,7 +9,7 @@ export class UpdateDailyAttendanceDto {
 
   @Field()
   @IsNotEmpty()
-  rollno: number;
+  rollNo: number;
 
   @Field(() => [Boolean])
   @IsNotEmpty()
