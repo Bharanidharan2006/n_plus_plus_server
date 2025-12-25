@@ -239,8 +239,6 @@ export class AttendanceService {
   async updateDailyAttendance(input: UpdateDailyAttendanceDto) {
     const schedule = await this.getScheduleByDate(input.date);
 
-    console.log(input.attendanceData);
-
     if (!schedule || schedule.length == 0) {
       throw new HttpException('No schedule found for the given day.', 404);
     }
@@ -249,7 +247,7 @@ export class AttendanceService {
 
     for (let i = 0; i < schedule.length; i++) {
       let subjectCode = schedule[i];
-      if (subjectCode != '') {
+      if (subjectCode !== '') {
         const subjectId = this.subjectMap.get(subjectCode);
         const attendanceRecord = await this.attendanceRepository.findOne({
           where: {
@@ -284,13 +282,13 @@ export class AttendanceService {
             attendanceRecord.attendanceRecords[recordIndex].attended[
               periodIndex
             ] = input.attendanceData[i];
-            console.log(
-              attendanceRecord.attendanceRecords[recordIndex].attended[
-                periodIndex
-              ],
-              input.attendanceData[i],
-              periodIndex,
-            );
+            // console.log(
+            //   attendanceRecord.attendanceRecords[recordIndex].attended[
+            //     periodIndex
+            //   ],
+            //   input.attendanceData[i],
+            //   periodIndex,
+            // );
 
             attendanceRecord.attendanceRecords[recordIndex].isUpdated = true;
 
@@ -348,11 +346,15 @@ export class AttendanceService {
         attendanceRecord.attendanceRecords[recordIndex].attended.filter(
           Boolean,
         ).length;
+      console.log(attendedHours);
+
       attendanceRecord.attendedContactHours += attendedHours;
       attendanceRecord.attendancePercentage =
         (attendanceRecord.attendedContactHours /
           attendanceRecord.totalContactHours) *
         100;
+
+      await this.attendanceRepository.save(attendanceRecord);
     }
 
     return true;

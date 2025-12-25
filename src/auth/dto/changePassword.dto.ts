@@ -1,13 +1,17 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { IsNotEmpty } from 'class-validator';
 
 @InputType()
 export class changePasswordInput {
   @Field()
+  @IsNotEmpty()
   rollno: number;
 
   @Field()
-  masterPassword: string;
+  @IsNotEmpty()
+  password: string;
 
   @Field()
-  password: string;
+  @IsNotEmpty()
+  masterPassword: string;
 }

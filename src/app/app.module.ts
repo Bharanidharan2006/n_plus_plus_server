@@ -30,6 +30,10 @@ dotenv.config();
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: true,
+      formatError: (error) => {
+        console.error('GRAPHQL ERROR:', error);
+        return error;
+      },
     }),
     ScheduleModule.forRoot(),
     WeekModule,

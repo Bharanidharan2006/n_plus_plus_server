@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
-import { Role } from 'src/enums/userrole';
+import { Gender, Role } from 'src/enums/userrole';
 
 @ObjectType()
 @Entity()
@@ -29,6 +29,14 @@ export class User {
   @Field()
   @Column()
   rollNo: number;
+
+  @Field()
+  @Column({ nullable: false })
+  dob: string;
+
+  @Field(() => String)
+  @Column({ nullable: false, type: 'enum', enum: Gender })
+  gender: Gender;
 
   @Field({ nullable: false })
   @Column()
@@ -58,9 +66,9 @@ export class User {
   @Column()
   refreshTokenVersion: number;
 
-  @Field(() => String)
-  @Column({ default: null })
-  notificationToken: string;
+  @Field(() => String, { nullable: true })
+  @Column({ default: null, nullable: true })
+  notificationToken: string | null;
 
   @Field(() => String)
   @Column({ nullable: false })

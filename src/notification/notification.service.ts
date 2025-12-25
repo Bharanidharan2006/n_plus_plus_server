@@ -7,13 +7,13 @@ import { Semester } from 'src/entities/semester.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { User } from 'src/entities/user.entity';
 import { Week } from 'src/entities/week.entity';
-import { Repository } from 'typeorm';
+import { MongoRepository, Repository } from 'typeorm';
 
 type NotificationPayload = {
   to: string;
   priority: string;
   data: {
-    actionId: ObjectId;
+    actionId: string;
     title: string;
     categoryId: string;
     body: string;
@@ -25,14 +25,14 @@ export class NotificationService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(NotificationAction)
+    private notificationActionRepository: MongoRepository<NotificationAction>,
     @InjectRepository(Subject)
     private subjectRepository: Repository<Subject>,
     @InjectRepository(Semester)
     private semesterRepository: Repository<Semester>,
     @InjectRepository(Week)
     private weekRepository: Repository<Week>,
-    @InjectRepository(NotificationAction)
-    private notificationActionRepository: Repository<NotificationAction>,
     @Inject(forwardRef(() => AttendanceService))
     private attendanceService: AttendanceService,
   ) {}
@@ -56,14 +56,9 @@ export class NotificationService {
     }
   }
 
-  async markAttendanceFromNotification(actionId: string): Promise<boolean> {
-    const notificationAction = await this.notificationActionRepository.findOne({
-      where: {
-        id: new ObjectId(actionId),
-      },
-    });
-    console.log(notificationAction);
-
+  async markAttendanceFromNotification(actionId: string) {
+    const notificationAction =
+      await this.notificationActionRepository.findOneById(actionId);
 
     if (!notificationAction)
       throw new HttpException(
@@ -81,11 +76,9 @@ export class NotificationService {
         notificationAction.isUpdated = true;
         await this.notificationActionRepository.save(notificationAction);
       } catch (e) {
-        
         throw new HttpException(e, 500);
       }
     }
-    return true;
   }
 
   // Sends the notification at 6 pm everyday(Cron to be added) to all users. Need to be headless so body is omitted and placed inside data
@@ -98,6 +91,7 @@ export class NotificationService {
         const action = {
           rollNo: user.rollNo,
           date: new Date(),
+          isUpdated: false,
         };
         const savedAction =
           await this.notificationActionRepository.save(action);
@@ -111,7 +105,7 @@ export class NotificationService {
           to: user.notificationToken,
           priority: 'high',
           data: {
-            actionId: savedAction.id,
+            actionId: savedAction.id.toString(),
             title: 'Mark your attendance',
             categoryId: 'attendance_actions',
             body: 'Did you attend all the classes today?',

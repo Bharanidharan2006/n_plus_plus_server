@@ -6,7 +6,7 @@ import {
   ObjectType,
 } from '@nestjs/graphql';
 import { IsNotEmpty } from 'class-validator';
-import { Role } from 'src/enums/userrole';
+import { Gender, Role } from 'src/enums/userrole';
 import { ObjectId } from 'typeorm';
 
 @InputType()
@@ -30,6 +30,14 @@ export class registerUserInput {
   @Field()
   @IsNotEmpty()
   currentSemester: number;
+
+  @Field()
+  @IsNotEmpty()
+  gender: Gender;
+
+  @Field()
+  @IsNotEmpty()
+  dob: string;
 
   //For rep access directly edit it in the db
 }
@@ -63,8 +71,8 @@ export class registerUserOutput {
   @Field(() => String)
   phoneNo: string;
 
-  @Field(() => String)
-  notificationToken: string;
+  @Field(() => String, { nullable: true })
+  notificationToken: string | null;
 
   @Field(() => GraphQLISODateTime, { nullable: true })
   createdAt: Date;

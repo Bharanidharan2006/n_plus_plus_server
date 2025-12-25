@@ -81,6 +81,7 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { rollNo: rollno },
     });
+
     if (!user) throw new UnauthorizedException('User not found');
 
     const isValid = await bcrypt.compare(masterPass, user.masterPassword);
@@ -112,6 +113,9 @@ export class AuthService {
       phoneNo: input.phoneNo,
       role: Role.Student,
       pendingDates: [],
+      gender: input.gender,
+      dob: input.dob,
+      notificationToken: null,
     };
 
     const savedUser = (await this.userRepository.save(newUser)) as User;

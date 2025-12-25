@@ -51,9 +51,9 @@ export class AttendanceResolver {
     return await this.attendanceService.getScheduleByDate(date);
   }
 
-  // @Query(() => String)
-  // async updateAttendanceForAll() {
-  //   await this.attendanceService.updateAttendanceCron();
-  //   return 'Done';
-  // }
+  @Query(() => String)
+  async updateAttendanceForAll() {
+    await this.attendanceService.updateAttendanceCron();
+    return 'Done';
+  }
 }

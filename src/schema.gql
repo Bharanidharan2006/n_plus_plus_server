@@ -7,13 +7,15 @@ type User {
   email: String!
   pendingDates: [DateTime!]!
   rollNo: Float!
+  dob: String!
+  gender: String!
   masterPassword: String!
   password: String
   userName: String!
   currentSemester: Int!
   role: String!
   refreshTokenVersion: Int!
-  notificationToken: String!
+  notificationToken: String
   phoneNo: String!
   createdAt: DateTime
 }
@@ -33,7 +35,7 @@ type registerUserOutput {
   role: String!
   pendingDates: [DateTime!]!
   phoneNo: String!
-  notificationToken: String!
+  notificationToken: String
   createdAt: DateTime
 }
 
@@ -95,7 +97,8 @@ type Query {
   getAttendanceRecord(rollNo: Float!, subjectId: String!): Attendance!
   getAttendancePercentage(rollNo: Float!): [GetAttendancePercentageOutput!]!
   getScheduleByDate(date: DateTime!): [String!]!
-  SendMarkAttendanceNotification: String!
+  updateAttendanceForAll: String!
+  sendMarkAttendanceNotification: String!
 }
 
 type Mutation {
@@ -133,12 +136,14 @@ input registerUserInput {
   rollNo: Float!
   userName: String!
   currentSemester: Float!
+  gender: String!
+  dob: String!
 }
 
 input changePasswordInput {
   rollno: Float!
-  masterPassword: String!
   password: String!
+  masterPassword: String!
 }
 
 input UpdateAttendanceDto {
