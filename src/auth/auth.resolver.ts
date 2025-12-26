@@ -47,8 +47,8 @@ export class AuthResolver {
   }
 
   @Mutation((returns) => Boolean)
-  changePassword(@Args('input') input: changePasswordInput) {
-    return this.authService.changePassword(
+  async changePassword(@Args('input') input: changePasswordInput) {
+    return await this.authService.changePassword(
       input.rollno,
       input.masterPassword,
       input.password,

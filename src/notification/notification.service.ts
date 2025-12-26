@@ -1,4 +1,5 @@
 import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { AttendanceService } from 'src/attendance/attendance.service';
@@ -7,6 +8,7 @@ import { Semester } from 'src/entities/semester.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { User } from 'src/entities/user.entity';
 import { Week } from 'src/entities/week.entity';
+import { SaturdayTT } from 'src/enums/saturday.tt';
 import { MongoRepository, Repository } from 'typeorm';
 
 type NotificationPayload = {
@@ -83,10 +85,20 @@ export class NotificationService {
 
   // Sends the notification at 6 pm everyday(Cron to be added) to all users. Need to be headless so body is omitted and placed inside data
 
+  @Cron('15 13 * * 1-6', {
+    timeZone: 'Asia/Kolkata',
+  })
   async sendMarkAttendanceNotification() {
+    const todayDayNo = new Date().getDay();
     const users = await this.userRepository.find();
+    let week = (
+      await this.weekRepository.find({ order: { weekNo: 'DESC' } })
+    )[0];
+    if (week.saturdayStatus === SaturdayTT.Leave && todayDayNo === 6) return;
     let payload: NotificationPayload[] = [];
     for (const user of users) {
+      console.log('Send notifications');
+
       if (user.notificationToken) {
         const action = {
           rollNo: user.rollNo,

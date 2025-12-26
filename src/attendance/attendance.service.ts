@@ -76,10 +76,14 @@ export class AttendanceService {
     return schedule;
   }
 
-  //@Cron('0 0 * * 1-6', { timeZone: 'Asia/Kolkata' })
+  @Cron('0 13 * * 1-6', {
+    timeZone: 'Asia/Kolkata',
+  })
   async updateAttendanceCron(isManualUpdate: boolean = false) {
     const today = new Date();
     const todaySchedule = await this.getScheduleByDate(today);
+    console.log('Updated Attendance for all');
+    if (todaySchedule.length === 0) return;
 
     const subjectToPeriod: Map<string, number[]> = new Map();
     todaySchedule.forEach((subjectCode, idx) => {
