@@ -85,7 +85,7 @@ export class NotificationService {
 
   // Sends the notification at 6 pm everyday(Cron to be added) to all users. Need to be headless so body is omitted and placed inside data
 
-  @Cron('15 13 * * 1-6', {
+  @Cron('15 14 * * 1-6', {
     timeZone: 'Asia/Kolkata',
   })
   async sendMarkAttendanceNotification() {

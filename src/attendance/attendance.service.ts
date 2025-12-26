@@ -76,7 +76,7 @@ export class AttendanceService {
     return schedule;
   }
 
-  @Cron('0 13 * * 1-6', {
+  @Cron('0 14 * * 1-6', {
     timeZone: 'Asia/Kolkata',
   })
   async updateAttendanceCron(isManualUpdate: boolean = false) {
