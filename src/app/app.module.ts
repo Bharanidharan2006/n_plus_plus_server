@@ -15,6 +15,7 @@ import { Attendance } from 'src/entities/attendance.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationModule } from 'src/notification/notification.module';
 import { NotificationAction } from 'src/entities/notification_action.entity';
+import { AppController } from './app.contoller';
 
 dotenv.config();
 
@@ -41,7 +42,7 @@ dotenv.config();
     AttendanceModule,
     NotificationModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
