@@ -288,7 +288,7 @@ export class AttendanceService {
           );
 
         const recordIndex = attendanceRecord?.attendanceRecords.findIndex((r) =>
-          this.isSameDate(input.date, r.date),
+          this.isSameDate(this.parseDate(input.date), r.date),
         );
 
         if (recordIndex >= 0) {
@@ -335,7 +335,7 @@ export class AttendanceService {
 
     if (user) {
       user.pendingDates = user.pendingDates.filter(
-        (d) => !this.isSameDate(d, input.date),
+        (d) => !this.isSameDate(d, this.parseDate(input.date)),
       );
 
       await this.userRepository.save(user);
@@ -365,7 +365,7 @@ export class AttendanceService {
         );
 
       const recordIndex = attendanceRecord?.attendanceRecords.findIndex((r) =>
-        this.isSameDate(input.date, r.date),
+        this.isSameDate(this.parseDate(input.date), r.date),
       );
       //Counting the no of true's to get the attended hours
       const attendedHours =
