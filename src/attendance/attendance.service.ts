@@ -253,7 +253,7 @@ export class AttendanceService {
 
   // Given a student's rollno and daily attendance data, this function updates function for each subject.
   async updateDailyAttendance(input: UpdateDailyAttendanceDto) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(input.date)) {
       throw new HttpException('Invalid date format', 400);
     }
 

@@ -166,7 +166,7 @@ input IndividualRecord {
 }
 
 input UpdateDailyAttendanceDto {
-  date: DateTime!
+  date: String!
   rollNo: Float!
   attendanceData: [Boolean!]!
 }
