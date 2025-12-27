@@ -72,14 +72,14 @@ export class AttendanceService {
     const startIndex = (dayNumber - 1) * 8;
     const endIndex = dayNumber * 8;
     const schedule = week.timeTable.slice(startIndex, endIndex);
-    let todayIsHoliday = false;
+    let todayIsNotHoliday = false;
     for (const period of schedule) {
       if (period !== '') {
-        todayIsHoliday = true;
+        todayIsNotHoliday = true;
       }
     }
 
-    return todayIsHoliday ? [] : schedule;
+    return todayIsNotHoliday ? schedule : [];
   }
 
   @Cron('0 17 * * 1-6', {

@@ -102,15 +102,15 @@ export class NotificationService {
       await this.weekRepository.find({ order: { weekNo: 'DESC' } })
     )[0];
     if (week.saturdayStatus === SaturdayTT.Leave && todayDayNo === 6) return;
-    const schedule = this.attendanceService.getScheduleByDate(new Date());
-    let todayIsHoliday = false;
-    for (const period of week.timeTable) {
+    const schedule = await this.attendanceService.getScheduleByDate(new Date());
+    let todayIsNotHoliday = false;
+    for (const period of schedule) {
       if (period !== '') {
-        todayIsHoliday = true;
+        todayIsNotHoliday = true;
       }
     }
 
-    if (todayIsHoliday) return;
+    if (!todayIsNotHoliday) return;
 
     let payload: NotificationPayload[] = [];
     for (const user of users) {
@@ -142,6 +142,7 @@ export class NotificationService {
         };
         payload.push(notificationPayload);
         user.pendingDates.push(new Date());
+        console.log(user);
         await this.userRepository.save(user);
       }
     }
