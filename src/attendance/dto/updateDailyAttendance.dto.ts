@@ -5,7 +5,7 @@ import { IsNotEmpty } from 'class-validator';
 export class UpdateDailyAttendanceDto {
   @Field()
   @IsNotEmpty()
-  date: Date;
+  date: string;
 
   @Field()
   @IsNotEmpty()

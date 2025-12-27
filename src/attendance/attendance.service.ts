@@ -49,6 +49,12 @@ export class AttendanceService {
     );
   }
 
+  parseDate(date: any): Date {
+    const [dd, mm, yyyy] = date.split('-').map(Number);
+    console.log(yyyy, mm - 1, dd);
+    return new Date(yyyy, mm - 1, dd);
+  }
+
   // Returns the schedule of a day given a date.
   async getScheduleByDate(date: Date): Promise<string[]> {
     let week;
@@ -247,13 +253,17 @@ export class AttendanceService {
 
   // Given a student's rollno and daily attendance data, this function updates function for each subject.
   async updateDailyAttendance(input: UpdateDailyAttendanceDto) {
-    console.log(input.date);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
+      throw new HttpException('Invalid date format', 400);
+    }
 
-    const schedule = await this.getScheduleByDate(input.date);
+    const schedule = await this.getScheduleByDate(this.parseDate(input.date));
     console.log(schedule);
     if (!schedule || schedule.length == 0) {
       throw new HttpException('No schedule found for the given day.', 404);
     }
+
+    console.log(this.parseDate(input.date));
 
     // Note: Attendance data is updated period by period. So if you have a block hour like first two hours maths, the 'isUpdated' field will be set to true when the first period's attendance is updated. So if a failure happens after updating the first hour attendance, it may be lead to inaccurate data (atomicity problem)
 
@@ -323,13 +333,10 @@ export class AttendanceService {
       },
     });
 
-    console.log(user);
-
     if (user) {
       user.pendingDates = user.pendingDates.filter(
         (d) => !this.isSameDate(d, input.date),
       );
-      console.log(user.pendingDates);
 
       await this.userRepository.save(user);
     } else {

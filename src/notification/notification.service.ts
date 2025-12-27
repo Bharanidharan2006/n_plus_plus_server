@@ -39,6 +39,14 @@ export class NotificationService {
     private attendanceService: AttendanceService,
   ) {}
 
+  //Remove this soon after moving to indian servers
+  formatDDMMYYYY(date) {
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}-${m}-${y}`;
+  }
+
   async updatePushNotificationToken(notificationToken: string, rollNo: number) {
     const user = await this.userRepository.findOne({
       where: { rollNo: rollNo },
@@ -72,7 +80,7 @@ export class NotificationService {
       try {
         await this.attendanceService.updateDailyAttendance({
           rollNo: notificationAction.rollNo,
-          date: notificationAction.date,
+          date: this.formatDDMMYYYY(notificationAction.date),
           attendanceData: Array(8).fill(true),
         });
         notificationAction.isUpdated = true;
