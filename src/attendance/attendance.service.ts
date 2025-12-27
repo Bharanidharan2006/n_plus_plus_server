@@ -391,4 +391,27 @@ export class AttendanceService {
 
     return pendingAttendanceOutput;
   }
+
+  async createAttendanceRecords() {
+    const users = await this.userRepository.find();
+    const subjects = await this.subjectRepository.find({
+      where: {
+        semesterId: new ObjectId(CURRENT_SEM),
+      },
+    });
+
+    for (const user of users) {
+      for (const subject of subjects) {
+        await this.attendanceRepository.save({
+          semesterId: new ObjectId(CURRENT_SEM),
+          studentRollNo: user.rollNo,
+          subjectId: subject.id,
+          totalContactHours: 0,
+          attendedContactHours: 0,
+          attendancePercentage: 0,
+          attendanceRecords: [],
+        });
+      }
+    }
+  }
 }

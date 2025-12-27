@@ -38,12 +38,11 @@ export class registerUserInput {
   @Field()
   @IsNotEmpty()
   dob: string;
-
   //For rep access directly edit it in the db
 }
 
 @ObjectType()
-export class registerUserOutput {
+export class RegisterUserOutputUser {
   @Field(() => String)
   id: string;
 
@@ -76,4 +75,13 @@ export class registerUserOutput {
 
   @Field(() => GraphQLISODateTime, { nullable: true })
   createdAt: Date;
+}
+
+@ObjectType()
+export class registerUserOutput {
+  @Field()
+  user: RegisterUserOutputUser;
+
+  @Field()
+  masterPassword: string;
 }

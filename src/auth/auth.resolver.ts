@@ -42,8 +42,8 @@ export class AuthResolver {
 
   @Mutation((returns) => Boolean)
   @UseGuards(GqlJwtAuthGuard)
-  logout(@Args('rollno') rollno: number) {
-    return this.authService.logout(rollno);
+  async logout(@Args('rollno') rollno: number) {
+    return await this.authService.logout(rollno);
   }
 
   @Mutation((returns) => Boolean)

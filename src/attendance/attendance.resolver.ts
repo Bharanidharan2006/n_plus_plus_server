@@ -8,6 +8,7 @@ import { Subject } from 'src/entities/subject.entity';
 import { Attendance } from 'src/entities/attendance.entity';
 import { UpdateDailyAttendanceDto } from './dto/updateDailyAttendance.dto';
 import { PendingAttendanceOutput } from './dto/pendingAttendanceOutput.dto';
+import { registerUserInput } from 'src/auth/dto/registerUser.dto';
 
 @Resolver()
 @UseGuards(GqlJwtAuthGuard)
@@ -54,6 +55,12 @@ export class AttendanceResolver {
   @Query(() => String)
   async updateAttendanceForAll() {
     await this.attendanceService.updateAttendanceCron();
+    return 'Done';
+  }
+
+  @Query(() => String)
+  async createAttendanceRecords() {
+    await this.attendanceService.createAttendanceRecords();
     return 'Done';
   }
 }

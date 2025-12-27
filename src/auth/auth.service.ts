@@ -96,7 +96,6 @@ export class AuthService {
 
   async registerUser(input: registerUserInput) {
     const mPassword = (await import('nanoid')).nanoid(12);
-    console.log(mPassword);
 
     const hashedMasterPassword = await bcrypt.hash(mPassword, 12);
 
@@ -123,7 +122,10 @@ export class AuthService {
 
     const { password, masterPassword, ...result } = savedUser;
 
-    return result;
+    return {
+      user: result,
+      masterPassword: mPassword,
+    };
   }
 
   async validateUser(rollno: number, password: string) {
