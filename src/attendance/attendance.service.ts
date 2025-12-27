@@ -72,8 +72,14 @@ export class AttendanceService {
     const startIndex = (dayNumber - 1) * 8;
     const endIndex = dayNumber * 8;
     const schedule = week.timeTable.slice(startIndex, endIndex);
+    let todayIsHoliday = false;
+    for (const period of schedule) {
+      if (period !== '') {
+        todayIsHoliday = true;
+      }
+    }
 
-    return schedule;
+    return todayIsHoliday ? [] : schedule;
   }
 
   @Cron('0 17 * * 1-6', {
@@ -241,8 +247,10 @@ export class AttendanceService {
 
   // Given a student's rollno and daily attendance data, this function updates function for each subject.
   async updateDailyAttendance(input: UpdateDailyAttendanceDto) {
-    const schedule = await this.getScheduleByDate(input.date);
+    console.log(input.date);
 
+    const schedule = await this.getScheduleByDate(input.date);
+    console.log(schedule);
     if (!schedule || schedule.length == 0) {
       throw new HttpException('No schedule found for the given day.', 404);
     }

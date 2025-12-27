@@ -102,6 +102,16 @@ export class NotificationService {
       await this.weekRepository.find({ order: { weekNo: 'DESC' } })
     )[0];
     if (week.saturdayStatus === SaturdayTT.Leave && todayDayNo === 6) return;
+    const schedule = this.attendanceService.getScheduleByDate(new Date());
+    let todayIsHoliday = false;
+    for (const period of week.timeTable) {
+      if (period !== '') {
+        todayIsHoliday = true;
+      }
+    }
+
+    if (todayIsHoliday) return;
+
     let payload: NotificationPayload[] = [];
     for (const user of users) {
       console.log('Send notifications');
