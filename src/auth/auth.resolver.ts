@@ -11,8 +11,9 @@ import { GqlJwtAuthGuard } from './guard/jwt_token.guard';
 export class AuthResolver {
   constructor(private authService: AuthService) {}
   @Mutation((returns) => registerUserOutput)
-  registerUser(@Args('input') input: registerUserInput) {
-    return this.authService.registerUser(input);
+  async registerUser(@Args('input') input: registerUserInput) {
+    const { user, masterPassword } = await this.authService.registerUser(input);
+    return user;
   }
 
   @Mutation((returns) => LoginResponse)
@@ -59,5 +60,11 @@ export class AuthResolver {
   @UseGuards(GqlJwtAuthGuard)
   getUser(@Args('token') token: string) {
     return this.authService.getUser(token);
+  }
+
+  @Mutation(() => String)
+  async registerUserDev(@Args('input') input: registerUserInput) {
+    const { user, masterPassword } = await this.authService.registerUser(input);
+    return masterPassword;
   }
 }
