@@ -116,6 +116,7 @@ type Mutation {
   refreshToken(refreshToken: String!): LoginResponse!
   logout(rollno: Float!): Boolean!
   changePassword(input: changePasswordInput!): Boolean!
+  registerUserDev(input: registerUserInput!): String!
   updateAttendance(input: UpdateAttendanceDto!): Boolean!
   updateDailyAttendance(input: UpdateDailyAttendanceDto!): Boolean!
   updatePushNotificationToken(notificationToken: String!, rollNo: Float!): Boolean!

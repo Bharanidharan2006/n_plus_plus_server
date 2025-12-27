@@ -35,7 +35,7 @@ export class AttendanceService {
     { subjectCode: 'CS23304', id: '68df5ae538107cbf5d0ecb2b' },
     { subjectCode: 'CS23U01', id: '68df5b0e38107cbf5d0ecb2c' },
     { subjectCode: 'CS23303', id: '68df5b4738107cbf5d0ecb2d' },
-    { subjectCode: 'U23U01', id: '68df5b6c38107cbf5d0ecb2e' },
+    { subjectCode: 'UC23U01', id: '68df5b6c38107cbf5d0ecb2e' },
     { subjectCode: 'CS23S01', id: '68df5bd638107cbf5d0ecb2f' },
   ];
 
@@ -261,6 +261,8 @@ export class AttendanceService {
           },
         });
 
+        console.log('Hit');
+
         if (!attendanceRecord)
           throw new HttpException(
             'No attendance record found for given rollno, subject and semester',
@@ -312,10 +314,15 @@ export class AttendanceService {
         rollNo: input.rollNo,
       },
     });
+
+    console.log(user);
+
     if (user) {
       user.pendingDates = user.pendingDates.filter(
         (d) => !this.isSameDate(d, input.date),
       );
+      console.log(user.pendingDates);
+
       await this.userRepository.save(user);
     } else {
       throw new HttpException("Internal Server Error: User didn't exist", 500);
