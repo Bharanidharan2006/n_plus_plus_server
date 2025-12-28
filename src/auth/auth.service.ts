@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MongoRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
@@ -18,7 +18,7 @@ dotenv.config();
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: MongoRepository<User>,
     private jwtService: JwtService,
   ) {}
 
@@ -59,9 +59,9 @@ export class AuthService {
         secret: process.env.JWT_REFRESH_SECRET,
       });
 
-      const user = await this.userRepository.findOne({
-        where: { id: payload.sub },
-      });
+      const user = await this.userRepository.findOneById(
+        new ObjectId(payload.sub),
+      );
 
       if (!user) throw new UnauthorizedException();
 
@@ -154,9 +154,7 @@ export class AuthService {
   }
 
   async getUserById(id: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: new ObjectId(id) },
-    });
+    const user = await this.userRepository.findOneById(new ObjectId(id));
 
     if (!user) throw new HttpException('User not found', 404);
     return user;
@@ -164,9 +162,7 @@ export class AuthService {
 
   async getUserFromAccessToken(token: string) {
     const userId = await this.getUserIdFromToken(token);
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
+    const user = await this.userRepository.findOneById(new ObjectId(userId));
 
     if (!user) throw new UnauthorizedException();
     return user;

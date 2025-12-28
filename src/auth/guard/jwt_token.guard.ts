@@ -33,7 +33,6 @@ export class GqlJwtAuthGuard implements CanActivate {
       });
       return true;
     } catch (error) {
-      console.log(error);
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException({
           message: 'Access token expired. Please use refresh token.',
