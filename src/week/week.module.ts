@@ -9,6 +9,7 @@ import { AttendanceService } from 'src/attendance/attendance.service';
 import { Attendance } from 'src/entities/attendance.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { CronStatus } from 'src/entities/cron_status.entity';
+import { AttendanceModule } from 'src/attendance/attendance.module';
 
 // --- This module should only be accessed by reps -----
 // 1. Reps can create a timetable for each week by clicking create which gives the default timetable and they can edit any classed that have changed for that week. Then they can send "CreateWeek" mutation;
@@ -20,7 +21,9 @@ import { CronStatus } from 'src/entities/cron_status.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Week, User, Attendance, Subject, CronStatus]),
+    forwardRef(() => AttendanceModule),
   ],
   providers: [WeekService, WeekResolver, AuthService, AttendanceService],
+  exports: [WeekService],
 })
 export class WeekModule {}

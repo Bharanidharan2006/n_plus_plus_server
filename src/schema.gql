@@ -97,7 +97,6 @@ type Query {
   methoddd: Int!
   getAllWeeks: [Week!]!
   getLatestWeek: Week!
-  getUser(token: String!): User!
   getSubjectDetails: [Subject!]!
   getSubjectInfo(id: String!): Subject!
   getAttendanceRecord(rollNo: Float!, subjectId: String!): Attendance!
@@ -105,6 +104,7 @@ type Query {
   getScheduleByDate(date: DateTime!): [String!]!
   updateAttendanceForAll: String!
   createAttendanceRecords: String!
+  getUser(token: String!): User!
   sendMarkAttendanceNotification: String!
 }
 
@@ -112,14 +112,14 @@ type Mutation {
   createWeekTimeTable(input: createWeekTimeTableDto!): Week!
   editWeekTimeTable(input: editWeekTimeTableDto!): Week!
   deleteWeekTimeTable(id: String!): String!
+  updateAttendance(input: UpdateAttendanceDto!): Boolean!
+  updateDailyAttendance(input: UpdateDailyAttendanceDto!): Boolean!
   registerUser(input: registerUserInput!): registerUserOutput!
   loginUser(rollno: Float!, password: String!): LoginResponse!
   refreshToken(refreshToken: String!): LoginResponse!
   logout(rollno: Float!): Boolean!
   changePassword(input: changePasswordInput!): Boolean!
   registerUserDev(input: registerUserInput!): String!
-  updateAttendance(input: UpdateAttendanceDto!): Boolean!
-  updateDailyAttendance(input: UpdateDailyAttendanceDto!): Boolean!
   updatePushNotificationToken(notificationToken: String!, rollNo: Float!): Boolean!
   markAttendanceFromNotification(actionId: String!): Boolean!
 }
@@ -138,22 +138,6 @@ input editWeekTimeTableDto {
   timeTable: [String!]!
 }
 
-input registerUserInput {
-  email: String!
-  phoneNo: String!
-  rollNo: Float!
-  userName: String!
-  currentSemester: Float!
-  gender: String!
-  dob: String!
-}
-
-input changePasswordInput {
-  rollno: Float!
-  password: String!
-  masterPassword: String!
-}
-
 input UpdateAttendanceDto {
   subjectCode: String!
   date: DateTime!
@@ -170,4 +154,20 @@ input UpdateDailyAttendanceDto {
   date: String!
   rollNo: Float!
   attendanceData: [Boolean!]!
+}
+
+input registerUserInput {
+  email: String!
+  phoneNo: String!
+  rollNo: Float!
+  userName: String!
+  currentSemester: Float!
+  gender: String!
+  dob: String!
+}
+
+input changePasswordInput {
+  rollno: Float!
+  password: String!
+  masterPassword: String!
 }

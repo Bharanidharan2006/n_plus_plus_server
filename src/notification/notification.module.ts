@@ -10,6 +10,9 @@ import { Subject } from 'src/entities/subject.entity';
 import { Semester } from 'src/entities/semester.entity';
 import { WeekService } from 'src/week/week.service';
 import { Week } from 'src/entities/week.entity';
+import { CronStatus } from 'src/entities/cron_status.entity';
+import { AttendanceModule } from 'src/attendance/attendance.module';
+import { WeekModule } from 'src/week/week.module';
 
 @Module({
   imports: [
@@ -20,13 +23,11 @@ import { Week } from 'src/entities/week.entity';
       Subject,
       Semester,
       Week,
+      CronStatus,
     ]),
+    AttendanceModule,
+    WeekModule,
   ],
-  providers: [
-    NotificationResolver,
-    NotificationService,
-    AttendanceService,
-    WeekService,
-  ],
+  providers: [NotificationResolver, NotificationService],
 })
 export class NotificationModule {}

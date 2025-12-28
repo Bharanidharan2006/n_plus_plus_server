@@ -16,6 +16,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationModule } from 'src/notification/notification.module';
 import { NotificationAction } from 'src/entities/notification_action.entity';
 import { AppController } from './app.contoller';
+import { CronStatus } from 'src/entities/cron_status.entity';
 
 dotenv.config();
 
@@ -24,7 +25,15 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'mongodb',
       url: process.env.DATABASE_URL,
-      entities: [Week, User, Subject, Semester, Attendance, NotificationAction],
+      entities: [
+        Week,
+        User,
+        Subject,
+        Semester,
+        Attendance,
+        NotificationAction,
+        CronStatus,
+      ],
       synchronize: true,
     }),
     GraphQLModule.forRoot({

@@ -13,7 +13,7 @@ import { UpdateDailyAttendanceDto } from './dto/updateDailyAttendance.dto';
 import { User } from 'src/entities/user.entity';
 import { CronStatus } from 'src/entities/cron_status.entity';
 
-const CURRENT_SEM = '68dccf5c38107cbf5d0ecaf9';
+const CURRENT_SEM = '695128d370b0a41bad58cff3';
 const CREATE_DAILY_ATTENDANCE_RECORD_CRON_ID =
   'CREATE_DAILY_ATTENDANCE_RECORD_CRON_ID';
 
@@ -26,22 +26,22 @@ export class AttendanceService {
     private subjectRepository: Repository<Subject>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(CronStatus)
-    private cronStatusRepository: Repository<CronStatus>,
     @Inject(forwardRef(() => WeekService))
     private weekService: WeekService,
+    @InjectRepository(CronStatus)
+    private cronStatusRepository: Repository<CronStatus>,
   ) {}
 
   // Subject Mapping
   subjects = [
-    { subjectCode: 'MA23C05', id: '68dcd0db38107cbf5d0ecafd' },
-    { subjectCode: 'CS23301', id: '68df5aa738107cbf5d0ecb29' },
-    { subjectCode: 'CS23302', id: '68df5aca38107cbf5d0ecb2a' },
-    { subjectCode: 'CS23304', id: '68df5ae538107cbf5d0ecb2b' },
-    { subjectCode: 'CS23U01', id: '68df5b0e38107cbf5d0ecb2c' },
-    { subjectCode: 'CS23303', id: '68df5b4738107cbf5d0ecb2d' },
-    { subjectCode: 'UC23U01', id: '68df5b6c38107cbf5d0ecb2e' },
-    { subjectCode: 'CS23S01', id: '68df5bd638107cbf5d0ecb2f' },
+    { subjectCode: 'MA23C03', id: '6951295770b0a41bad58cff7' },
+    { subjectCode: 'CS23401', id: '695129f070b0a41bad58cffa' },
+    { subjectCode: 'CS23402', id: '69512a1770b0a41bad58cffb' },
+    { subjectCode: 'CS23403', id: '69512a6470b0a41bad58cffe' },
+    { subjectCode: 'CS23404', id: '69512a8b70b0a41bad58cfff' },
+    { subjectCode: 'SDC', id: '69512af370b0a41bad58d000' },
+    { subjectCode: 'IOC', id: '69512b6f70b0a41bad58d002' },
+    { subjectCode: 'AUDIT', id: '69512b2970b0a41bad58d001' },
   ];
 
   subjectIdToCodeMap = new Map(
@@ -56,18 +56,6 @@ export class AttendanceService {
       d1.getMonth() === d2.getMonth() &&
       d1.getDate() === d2.getDate()
     );
-  }
-
-  getISTDateAsUTCMidnight(baseDate: Date = new Date()): Date {
-    const istDate = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Kolkata',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(baseDate);
-
-    // Force UTC midnight for the IST calendar date
-    return new Date(`${istDate}T00:00:00.000Z`);
   }
 
   formatDDMMYYYY(date) {
@@ -120,7 +108,7 @@ export class AttendanceService {
     timeZone: 'Asia/Kolkata',
   })
   async updateAttendanceCron(isManualUpdate: boolean = false) {
-    const today = this.getISTDateAsUTCMidnight();
+    const today = new Date();
     const dateString = this.formatDDMMYYYY(today);
     const cronStatus = await this.cronStatusRepository.findOne({
       where: {
