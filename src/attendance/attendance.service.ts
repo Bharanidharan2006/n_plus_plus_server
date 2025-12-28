@@ -245,15 +245,15 @@ export class AttendanceService {
     return subjects;
   }
 
-  async getSubjectInfo(id: string) {
-    const subject = await this.subjectRepository.find({
+  async getSubjectInfo(id: string): Promise<Subject> {
+    const subject = await this.subjectRepository.findOne({
       where: {
         semesterId: new ObjectId(CURRENT_SEM),
         subjectCode: this.subjectIdToCodeMap.get(id),
       },
     });
     if (subject) {
-      return subject;
+      return subject[0];
     } else {
       throw new HttpException(
         'Subject with the given object id is not found',
