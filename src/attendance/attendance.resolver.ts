@@ -22,8 +22,8 @@ export class AttendanceResolver {
 
   //Returns a single subject
   @Query(() => Subject)
-  getSubjectInfo(@Args('id') id: string) {
-    return this.attendanceService.getSubjectInfo(id);
+  async getSubjectInfo(@Args('id') id: string) {
+    return await this.attendanceService.getSubjectInfo(id);
   }
 
   @Query(() => Attendance)

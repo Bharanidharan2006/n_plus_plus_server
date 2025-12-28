@@ -252,8 +252,10 @@ export class AttendanceService {
         subjectCode: this.subjectIdToCodeMap.get(id),
       },
     });
+    //console.log(subject, this.subjectIdToCodeMap.get(id));
+
     if (subject) {
-      return subject[0];
+      return subject;
     } else {
       throw new HttpException(
         'Subject with the given object id is not found',
