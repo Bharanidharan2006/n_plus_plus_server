@@ -11,8 +11,11 @@ import { Subject } from 'src/entities/subject.entity';
 import { GetAttendancePercentageOutput } from './dto/attendancePercentage.dto';
 import { UpdateDailyAttendanceDto } from './dto/updateDailyAttendance.dto';
 import { User } from 'src/entities/user.entity';
+import { CronStatus } from 'src/entities/cron_status.entity';
 
 const CURRENT_SEM = '68dccf5c38107cbf5d0ecaf9';
+const CREATE_DAILY_ATTENDANCE_RECORD_CRON_ID =
+  'CREATE_DAILY_ATTENDANCE_RECORD_CRON_ID';
 
 @Injectable()
 export class AttendanceService {
@@ -23,6 +26,8 @@ export class AttendanceService {
     private subjectRepository: Repository<Subject>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(CronStatus)
+    private cronStatusRepository: Repository<CronStatus>,
     @Inject(forwardRef(() => WeekService))
     private weekService: WeekService,
   ) {}
@@ -51,6 +56,25 @@ export class AttendanceService {
       d1.getMonth() === d2.getMonth() &&
       d1.getDate() === d2.getDate()
     );
+  }
+
+  getISTDateAsUTCMidnight(baseDate: Date = new Date()): Date {
+    const istDate = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(baseDate);
+
+    // Force UTC midnight for the IST calendar date
+    return new Date(`${istDate}T00:00:00.000Z`);
+  }
+
+  formatDDMMYYYY(date) {
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}-${m}-${y}`;
   }
 
   parseDate(date: any): Date {
@@ -96,7 +120,20 @@ export class AttendanceService {
     timeZone: 'Asia/Kolkata',
   })
   async updateAttendanceCron(isManualUpdate: boolean = false) {
-    const today = new Date();
+    const today = this.getISTDateAsUTCMidnight();
+    const dateString = this.formatDDMMYYYY(today);
+    const cronStatus = await this.cronStatusRepository.findOne({
+      where: {
+        cronId: CREATE_DAILY_ATTENDANCE_RECORD_CRON_ID,
+        date: dateString,
+      },
+    });
+    if (cronStatus) return;
+
+    await this.cronStatusRepository.save({
+      cronId: CREATE_DAILY_ATTENDANCE_RECORD_CRON_ID,
+      date: dateString,
+    });
     const todaySchedule = await this.getScheduleByDate(today);
     console.log('Updated Attendance for all');
     if (todaySchedule.length === 0) return;

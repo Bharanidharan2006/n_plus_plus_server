@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { AttendanceService } from 'src/attendance/attendance.service';
+import { CronStatus } from 'src/entities/cron_status.entity';
 import { NotificationAction } from 'src/entities/notification_action.entity';
 import { Semester } from 'src/entities/semester.entity';
 import { Subject } from 'src/entities/subject.entity';
@@ -22,6 +23,8 @@ type NotificationPayload = {
   };
 };
 
+const SEND_NOTIFICATION_CRON_ID = 'SEND_NOTIFICATION_CRON_ID';
+
 @Injectable()
 export class NotificationService {
   constructor(
@@ -33,6 +36,8 @@ export class NotificationService {
     private subjectRepository: Repository<Subject>,
     @InjectRepository(Semester)
     private semesterRepository: Repository<Semester>,
+    @InjectRepository(CronStatus)
+    private cronStatusRepository: Repository<CronStatus>,
     @InjectRepository(Week)
     private weekRepository: Repository<Week>,
     @Inject(forwardRef(() => AttendanceService))
@@ -45,6 +50,18 @@ export class NotificationService {
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const y = date.getFullYear();
     return `${d}-${m}-${y}`;
+  }
+
+  getISTDateAsUTCMidnight(baseDate: Date = new Date()): Date {
+    const istDate = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(baseDate);
+
+    // Force UTC midnight for the IST calendar date
+    return new Date(`${istDate}T00:00:00.000Z`);
   }
 
   async updatePushNotificationToken(notificationToken: string, rollNo: number) {
@@ -104,7 +121,21 @@ export class NotificationService {
     timeZone: 'Asia/Kolkata',
   })
   async sendMarkAttendanceNotification() {
-    const todayDayNo = new Date().getDay();
+    const today = this.getISTDateAsUTCMidnight();
+    const todayDayNo = today.getDay();
+    const dateString = this.formatDDMMYYYY(today);
+    const cronStatus = await this.cronStatusRepository.findOne({
+      where: {
+        cronId: SEND_NOTIFICATION_CRON_ID,
+        date: dateString,
+      },
+    });
+    if (cronStatus) return;
+
+    await this.cronStatusRepository.save({
+      cronId: SEND_NOTIFICATION_CRON_ID,
+      date: dateString,
+    });
     const users = await this.userRepository.find();
     let week = (
       await this.weekRepository.find({ order: { weekNo: 'DESC' } })
@@ -127,7 +158,7 @@ export class NotificationService {
       if (user.notificationToken) {
         const action = {
           rollNo: user.rollNo,
-          date: new Date(),
+          date: today,
           isUpdated: false,
         };
         const savedAction =

@@ -16,6 +16,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import timetable from './timetable.json';
 import { SaturdayTT } from 'src/enums/saturday.tt';
 import { AttendanceService } from 'src/attendance/attendance.service';
+import { CronStatus } from 'src/entities/cron_status.entity';
+
+const CREATE_WEEKLY_TIMETABLE_CRON_ID = 'CREATE_WEEKLY_TIMETABLE_CRON_ID';
 
 @Injectable()
 export class WeekService {
@@ -23,15 +26,57 @@ export class WeekService {
     @Inject(forwardRef(() => AttendanceService))
     private attendanceService: AttendanceService,
     @InjectRepository(Week) private weekRepository: Repository<Week>,
+    @InjectRepository(CronStatus)
+    private cronStatusRepository: Repository<CronStatus>,
   ) {}
 
+  formatDDMMYYYY(date) {
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}-${m}-${y}`;
+  }
+
+  getISTDateAsUTCMidnight(baseDate: Date = new Date()): Date {
+    const istDate = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(baseDate);
+
+    // Force UTC midnight for the IST calendar date
+    return new Date(`${istDate}T00:00:00.000Z`);
+  }
+
   // CRON that creates timetable from a default timetable every sunday night
-  @Cron(CronExpression.EVERY_WEEK, { timeZone: 'Asia/Kolkata' })
+  @Cron('0 1 * * 0', { timeZone: 'Asia/Kolkata' })
   async updateTimeTable() {
-    const startDate = new Date();
-    const endDate = new Date();
+    const today = new Date();
+    const dateString = this.formatDDMMYYYY(today);
+    const cronStatus = await this.cronStatusRepository.findOne({
+      where: {
+        cronId: CREATE_WEEKLY_TIMETABLE_CRON_ID,
+        date: dateString,
+      },
+    });
+    if (cronStatus) return;
+
+    await this.cronStatusRepository.save({
+      cronId: CREATE_WEEKLY_TIMETABLE_CRON_ID,
+      date: dateString,
+    });
+    // IST calendar date → UTC midnight
+    const startDate = this.getISTDateAsUTCMidnight();
+
+    // Clone to avoid mutating startDate
+    const endDate = new Date(startDate);
+
+    // Add 7 calendar days SAFELY
+    endDate.setUTCDate(endDate.getUTCDate() + 7);
+
     const latestWeek = await this.getLatestWeek();
-    endDate.setDate(startDate.getDate() + 7); //
+    //
     const newWeek = {
       startDate: startDate,
       endDate: endDate,
