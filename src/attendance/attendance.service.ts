@@ -39,6 +39,10 @@ export class AttendanceService {
     { subjectCode: 'CS23S01', id: '68df5bd638107cbf5d0ecb2f' },
   ];
 
+  subjectIdToCodeMap = new Map(
+    this.subjects.map((sub) => [sub.id, sub.subjectCode]),
+  );
+
   subjectMap = new Map(this.subjects.map((sub) => [sub.subjectCode, sub.id]));
 
   isSameDate(d1, d2) {
@@ -240,6 +244,24 @@ export class AttendanceService {
     });
     return subjects;
   }
+
+  async getSubjectInfo(id: string) {
+    const subject = await this.subjectRepository.find({
+      where: {
+        semesterId: new ObjectId(CURRENT_SEM),
+        subjectCode: this.subjectIdToCodeMap.get(id),
+      },
+    });
+    if (subject) {
+      return subject;
+    } else {
+      throw new HttpException(
+        'Subject with the given object id is not found',
+        404,
+      );
+    }
+  }
+
   async getAttendanceRecord(rollNo: number, subjectId: string) {
     const attendanceRecord = await this.attendanceRepository.findOne({
       where: {
@@ -278,8 +300,6 @@ export class AttendanceService {
             semesterId: new ObjectId(CURRENT_SEM),
           },
         });
-
-        console.log('Hit');
 
         if (!attendanceRecord)
           throw new HttpException(

@@ -20,6 +20,12 @@ export class AttendanceResolver {
     return this.attendanceService.getSubjectDetails();
   }
 
+  //Returns a single subject
+  @Query(() => Subject)
+  getSubjectInfo(@Args('id') id: string) {
+    return this.attendanceService.getSubjectInfo(id);
+  }
+
   @Query(() => Attendance)
   getAttendanceRecord(
     @Args('rollNo') rollNo: number,

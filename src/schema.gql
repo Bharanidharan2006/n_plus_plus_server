@@ -99,6 +99,7 @@ type Query {
   getLatestWeek: Week!
   getUser(token: String!): User!
   getSubjectDetails: [Subject!]!
+  getSubjectInfo(id: String!): Subject!
   getAttendanceRecord(rollNo: Float!, subjectId: String!): Attendance!
   getAttendancePercentage(rollNo: Float!): [GetAttendancePercentageOutput!]!
   getScheduleByDate(date: DateTime!): [String!]!
