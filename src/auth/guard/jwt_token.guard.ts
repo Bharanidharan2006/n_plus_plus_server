@@ -1,3 +1,4 @@
+// gql-jwt.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -30,27 +31,17 @@ export class GqlJwtAuthGuard implements CanActivate {
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_ACCESS_SECRET,
       });
-      if (payload.tokenVersion !== undefined) {
-        throw new UnauthorizedException('Invalid access token');
-      }
-
-      req.user = {
-        userId: payload.sub,
-      };
-
       return true;
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException({
           message: 'Access token expired. Please use refresh token.',
         });
-      }
-
-      if (error instanceof JsonWebTokenError) {
+      } else if (error instanceof JsonWebTokenError) {
         throw new UnauthorizedException('Invalid access token');
+      } else {
+        throw new UnauthorizedException('Unauthorized');
       }
-
-      throw new UnauthorizedException('Unauthorized');
     }
   }
 }

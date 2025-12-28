@@ -4,30 +4,39 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthService } from '../auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { Role } from 'src/enums/userrole';
 
 @Injectable()
 export class RepAccessGuard implements CanActivate {
-  constructor(private authService: AuthService) {}
-
+  constructor(
+    private authService: AuthService,
+    private jwtService: JwtService,
+  ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
     const req = ctx.getContext().req;
 
-    const { userId } = req.user ?? {};
-
-    if (!userId) {
-      throw new UnauthorizedException();
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      throw new UnauthorizedException('No Authorization header provided');
     }
 
-    const user = await this.authService.getUserById(userId);
-
-    if (!user || user.role !== Role.Representative) {
-      throw new UnauthorizedException('Insufficient permissions');
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('No token found');
     }
 
-    return true;
+    const payload = this.jwtService.verify(token, {
+      secret: process.env.JWT_ACCESS_SECRET,
+    });
+    const user = await this.authService.getUserById(payload.sub);
+    if (user && user.role === Role.Representative) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
