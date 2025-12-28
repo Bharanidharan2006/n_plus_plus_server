@@ -59,7 +59,7 @@ export class AuthResolver {
   @Query(() => User)
   @UseGuards(GqlJwtAuthGuard)
   getUser(@Args('token') token: string) {
-    return this.authService.getUser(token);
+    return this.authService.getUserFromAccessToken(token);
   }
 
   @Mutation(() => String)

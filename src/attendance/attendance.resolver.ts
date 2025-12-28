@@ -11,7 +11,7 @@ import { PendingAttendanceOutput } from './dto/pendingAttendanceOutput.dto';
 import { registerUserInput } from 'src/auth/dto/registerUser.dto';
 
 @Resolver()
-@UseGuards(GqlJwtAuthGuard)
+//@UseGuards(GqlJwtAuthGuard)
 export class AttendanceResolver {
   constructor(private attendanceService: AttendanceService) {}
 
