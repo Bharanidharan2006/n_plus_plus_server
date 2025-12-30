@@ -153,8 +153,6 @@ export class NotificationService {
 
     let payload: NotificationPayload[] = [];
     for (const user of users) {
-      console.log('Send notifications');
-
       if (user.notificationToken) {
         const action = {
           rollNo: user.rollNo,
@@ -180,10 +178,9 @@ export class NotificationService {
           },
         };
         payload.push(notificationPayload);
-        user.pendingDates.push(new Date());
-        console.log(user);
-        await this.userRepository.save(user);
       }
+      user.pendingDates.push(new Date());
+      await this.userRepository.save(user);
     }
 
     const headers = {
